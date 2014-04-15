@@ -3,47 +3,51 @@ using System.Collections;
 
 namespace Uzu
 {
-  public static class Ad
-  {
-    public static int CreateBanner (TextAnchor textAnchor)
-    {
+	public static class Ad
+	{
+		public static int INVALID_BANNER_ID = -1;
+
+		public static int CreateBanner (TextAnchor textAnchor)
+		{
 #if UNITY_IOS
-      iAdBanner banner = iAdBannerController.instance.CreateAdBanner (textAnchor);
-      return banner.id;
+			iAdBanner banner = iAdBannerController.instance.CreateAdBanner (textAnchor);
+			return banner.id;
+#else
+			return INVALID_BANNER_ID;
 #endif
-    }
+		}
 
-    public static void ShowBanner (int bannerId)
-    {
+		public static void ShowBanner (int bannerId)
+		{
 #if UNITY_IOS
-      iAdBanner banner = iAdBannerController.instance.GetBanner (bannerId);
-      if (banner == null) {
-        Debug.LogWarning ("Invalid banner id: " + bannerId);
-        return;
-      }
+			iAdBanner banner = iAdBannerController.instance.GetBanner (bannerId);
+			if (banner == null) {
+				Debug.LogWarning ("Invalid banner id: " + bannerId);
+				return;
+			}
 
-      banner.Show ();
+			banner.Show ();
 #endif
-    }
+		}
 
-    public static void HideBanner (int bannerId)
-    {
+		public static void HideBanner (int bannerId)
+		{
 #if UNITY_IOS
-      iAdBanner banner = iAdBannerController.instance.GetBanner (bannerId);
-      if (banner == null) {
-        Debug.LogWarning ("Invalid banner id: " + bannerId);
-        return;
-      }
+			iAdBanner banner = iAdBannerController.instance.GetBanner (bannerId);
+			if (banner == null) {
+				Debug.LogWarning ("Invalid banner id: " + bannerId);
+				return;
+			}
 
-      banner.Hide ();
+			banner.Hide ();
 #endif
-    }
+		}
 
-    public static void DestroyBanner (int bannerId)
-    {
+		public static void DestroyBanner (int bannerId)
+		{
 #if UNITY_IOS
-      iAdBannerController.instance.DestroyBanner (bannerId);
+			iAdBannerController.instance.DestroyBanner (bannerId);
 #endif
-    }
-  }
+		}
+	}
 }
