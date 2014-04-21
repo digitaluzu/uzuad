@@ -7,20 +7,42 @@ namespace Uzu
 	{
 		public static int INVALID_BANNER_ID = -1;
 
+		public static void Init (string adUnitId)
+		{
+#if UZU_GOOGLEPLAY
+			AndroidAdMobController.instance.Init (adUnitId);
+#endif
+		}
+
 		public static int CreateBanner (TextAnchor textAnchor)
 		{
 #if UNITY_IOS
 			iAdBanner banner = iAdBannerController.instance.CreateAdBanner (textAnchor);
-			return banner.id;
-#else
-			return INVALID_BANNER_ID;
+			if (banner != null) {
+				return banner.id;
+			}
+#elif UZU_GOOGLEPLAY
+			GoogleMobileAdBanner banner = AndroidAdMobController.instance.CreateAdBanner (textAnchor, GADBannerSize.SMART_BANNER);
+			if (banner != null) {
+				return banner.id;
+			}
 #endif
+
+			return INVALID_BANNER_ID;
 		}
 
 		public static void ShowBanner (int bannerId)
 		{
 #if UNITY_IOS
 			iAdBanner banner = iAdBannerController.instance.GetBanner (bannerId);
+			if (banner == null) {
+				Debug.LogWarning ("Invalid banner id: " + bannerId);
+				return;
+			}
+
+			banner.Show ();
+#elif UZU_GOOGLEPLAY
+			GoogleMobileAdBanner banner = AndroidAdMobController.instance.GetBanner (bannerId);
 			if (banner == null) {
 				Debug.LogWarning ("Invalid banner id: " + bannerId);
 				return;
@@ -40,6 +62,14 @@ namespace Uzu
 			}
 
 			banner.Hide ();
+#elif UZU_GOOGLEPLAY
+			GoogleMobileAdBanner banner = AndroidAdMobController.instance.GetBanner (bannerId);
+			if (banner == null) {
+				Debug.LogWarning ("Invalid banner id: " + bannerId);
+				return;
+			}
+
+			banner.Hide ();
 #endif
 		}
 
@@ -47,6 +77,8 @@ namespace Uzu
 		{
 #if UNITY_IOS
 			iAdBannerController.instance.DestroyBanner (bannerId);
+#elif UZU_GOOGLEPLAY
+			AndroidAdMobController.instance.DestroyBanner (bannerId);
 #endif
 		}
 	}
